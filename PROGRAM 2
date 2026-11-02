@@ -1,0 +1,90 @@
+# Candidate-Elimination Algorithm
+
+import csv
+
+# Create a CSV file containing training examples
+data = [
+    ["Sky", "AirTemp", "Humidity", "Wind", "Water", "Forecast", "EnjoySport"],
+    ["Sunny", "Warm", "Normal", "Strong", "Warm", "Same", "Yes"],
+    ["Sunny", "Warm", "High", "Strong", "Warm", "Same", "Yes"],
+    ["Rainy", "Cold", "High", "Strong", "Warm", "Change", "No"],
+    ["Sunny", "Warm", "High", "Strong", "Cool", "Change", "Yes"]
+]
+
+with open("training_data.csv", "w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerows(data)
+
+# Read the CSV file
+with open("training_data.csv", "r") as file:
+    reader = csv.reader(file)
+    next(reader)
+    examples = list(reader)
+
+domains = [
+    sorted(set(row[i] for row in examples))
+    for i in range(6)
+]
+
+S = ["Ø"] * 6
+G = [["?"] * 6]
+
+def covers(h, x):
+    return all(a == "?" or a == b for a, b in zip(h, x))
+
+def more_general_or_equal(h1, h2):
+    return all(a == "?" or a == b or b == "Ø"
+               for a, b in zip(h1, h2))
+
+def remove_inconsistent(boundary, x, positive):
+    return [h for h in boundary if covers(h, x) == positive]
+
+for row in examples:
+    x, label = row[:-1], row[-1]
+
+    if label == "Yes":
+        G = remove_inconsistent(G, x, True)
+
+        for i in range(6):
+            if S[i] == "Ø":
+                S[i] = x[i]
+            elif S[i] != x[i]:
+                S[i] = "?"
+
+        G = [g for g in G if more_general_or_equal(g, S)]
+
+    else:
+        new_G = []
+
+        for g in G:
+            if not covers(g, x):
+                new_G.append(g)
+                continue
+
+            for i in range(6):
+                if g[i] == "?":
+                    for value in domains[i]:
+                        if value != x[i] and (
+                            S[i] == "Ø" or S[i] == value
+                            or S[i] == "?"
+                        ):
+                            h = g.copy()
+                            h[i] = value
+
+                            if covers(h, x) is False:
+                                new_G.append(h)
+
+        G = [
+            h for h in new_G
+            if not any(
+                h != other and more_general_or_equal(h, other)
+                for other in new_G
+            )
+        ]
+
+print("Specific Boundary (S):")
+print(S)
+
+print("\nGeneral Boundary (G):")
+for h in G:
+    print(h)
