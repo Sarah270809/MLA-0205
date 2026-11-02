@@ -1,0 +1,35 @@
+# Artificial Neural Network using Backpropagation
+
+from sklearn.neural_network import MLPClassifier
+
+# XOR dataset
+X = [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+]
+
+y = [0, 1, 1, 0]
+
+# Create the neural network
+model = MLPClassifier(
+    hidden_layer_sizes=(4,),
+    activation="tanh",
+    solver="lbfgs",
+    max_iter=5000,
+    random_state=1
+)
+
+# Train the network
+model.fit(X, y)
+
+# Test the network
+predictions = model.predict(X)
+
+print("Input Data:")
+for row in X:
+    print(row)
+
+print("\nActual Output:", y)
+print("Predicted Output:", predictions.tolist())
