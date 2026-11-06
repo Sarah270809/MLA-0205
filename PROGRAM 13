@@ -1,0 +1,26 @@
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# Dataset: Mileage and Car Price
+X = np.array([
+    [10000],
+    [20000],
+    [30000],
+    [40000],
+    [50000]
+])
+
+y = np.array([18, 16, 14, 12, 10])
+
+# Train model
+model = LinearRegression()
+model.fit(X, y)
+
+# Predict car price
+mileage = [[35000]]
+prediction = model.predict(mileage)
+
+print("Car Mileage:", mileage[0][0])
+print("Predicted Car Price:",
+      round(prediction[0], 2), "Lakhs")
