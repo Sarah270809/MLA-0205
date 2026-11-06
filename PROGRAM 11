@@ -1,0 +1,29 @@
+
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+
+# Sample dataset
+data = {
+    'Income': [25000, 30000, 50000, 60000, 20000,
+               70000, 45000, 80000],
+    'Age': [22, 25, 35, 40, 21, 45, 32, 50],
+    'CreditScore': [500, 550, 700, 750, 480, 800, 650, 820],
+    'Class': ['Poor', 'Poor', 'Good', 'Good',
+              'Poor', 'Good', 'Good', 'Good']
+}
+
+df = pd.DataFrame(data)
+
+X = df[['Income', 'Age', 'CreditScore']]
+y = df['Class']
+
+# Train model
+model = DecisionTreeClassifier(random_state=42)
+model.fit(X, y)
+
+# Predict new customer
+new_customer = [[40000, 30, 680]]
+prediction = model.predict(new_customer)
+
+print("Credit Score Classification:",
+      prediction[0])
